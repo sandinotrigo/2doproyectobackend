@@ -1,13 +1,20 @@
 import express from 'express';
-import path from 'path';
-import http from 'http';
-import { Server } from 'socket.io';
 import productRouter from './src/routes/productRoutes.js';
+import cartRouter from './src/routes/cartRoutes.js';
+import handlebars from 'express-handlebars';
+import viewsRouter from './src/routes/viewsRoutes.js'; 
+import __dirname from './src/utils.js';
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
-export const socketServer = io;
+
+//HANDLEBARS
+app.engine('handlebars', handlebars.engine());
+app.set('views', __dirname + '/views');
+app.set('view engine', 'handlebars');
+app.use(express.static(__dirname+'/public'));
+
+
+
 app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy", "default-src 'self'");
   next();
@@ -15,11 +22,16 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+//ViewsRputes
+app.use('/', viewsRouter);
+
+//ManagerRoutes
 app.use('/products', productRouter);
+app.use('/carts', cartRouter);
 
 
 const PORT = 8080;
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
 export default app;

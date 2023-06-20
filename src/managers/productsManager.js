@@ -1,7 +1,7 @@
 import fs from "fs";
 class ProductManager {
   constructor() {
-    this.path = "../data/products.json";
+    this.path = "../2doproyectobackend/src/data/products.json";
     this.codeaccumulator = 0;
   }
 
