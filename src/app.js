@@ -1,11 +1,21 @@
 import express from 'express';
-import productRouter from './src/routes/productRoutes.js';
-import cartRouter from './src/routes/cartRoutes.js';
+import productRouter from './routes/productRoutes.js';
+import cartRouter from './routes/cartRoutes.js';
 import handlebars from 'express-handlebars';
-import viewsRouter from './src/routes/viewsRoutes.js'; 
-import __dirname from './src/utils.js';
+import viewsRouter from './routes/viewsRoutes.js'; 
+import __dirname from './utils.js';
+import { Server } from 'socket.io';
 
 const app = express();
+
+//sockets
+const httpServer = app.listen(8080,()=>console.log("listening on http server"));// tener en cuenta que ya tengo el listening on server abajo, tendre que borrar este?
+app.use('/socket.io', express.static(__dirname + '/node_modules/socket.io/client-dist'));
+const socketServer = new Server (httpServer);
+
+socketServer.on('conection', socket =>{
+  console.log("nuevo cliente conectado");
+} )
 
 //HANDLEBARS
 app.engine('handlebars', handlebars.engine());
@@ -30,8 +40,8 @@ app.use('/products', productRouter);
 app.use('/carts', cartRouter);
 
 
-const PORT = 8080;
+/*const PORT = 8080;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
-});
+});*/
 export default app;
